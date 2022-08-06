@@ -1,4 +1,3 @@
-
 class GameScene extends Phaser.Scene {
 
     // コンストラクタ
