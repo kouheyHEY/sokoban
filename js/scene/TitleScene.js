@@ -5,18 +5,6 @@ class TitleScene extends Phaser.Scene {
         super({ key: 'TitleScene' });
     }
 
-    // 画面生成時の実行関数
-    create() {
-
-        let sceneName = this.add.text(150, 70, 'TitleScene').setFontSize(30).setFontFamily("Arial").setOrigin(0.5).setInteractive();
-
-        let change = this.add.text(150, 130, 'Change Scene!').setFontSize(20).setFontFamily("Arial").setOrigin(0.5).setInteractive();
-
-        change.on('pointerdown', function (pointer) {
-            this.scene.start('GameScene');
-        }, this);
-    }
-
     // 画面生成前の実行関数
     preload() {
 
@@ -55,5 +43,22 @@ class TitleScene extends Phaser.Scene {
         this.load.image("title_create", "./assets/img/title_create.png")
         this.load.image("title_game", "./assets/img/title_game.png")
         this.load.image("title_select_cursor", "./assets/img/title_select_cursor.png")
+    }
+
+    // 画面生成時の実行関数
+    create() {
+
+        // 背景画像の設定
+        this.add.image(D_WIDTH / 2, D_HEIGHT / 2, "title_bg");
+
+        // ゲーム開始ボタンの設定
+        let button_game = this.add.image(D_WIDTH / 2, D_HEIGHT / 2 + 100, "title_game").setOrigin(0.5).setInteractive();
+
+        // ゲーム開始ボタンの動作設定
+        button_game.on('pointerdown', function (pointer) {
+
+            // タッチされた場合、ゲームシーンに遷移する
+            this.scene.start('GameScene');
+        }, this);
     }
 };
