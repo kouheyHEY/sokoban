@@ -31,14 +31,13 @@ const config = {
             debug: true,
             // 重力の方向と強さ
             gravity: {
-                y: 300
             }
         }
     },
 }
 
 // ゲームの開始
-let phaser = new Phaser.Game(config);
+const phaser = new Phaser.Game(config);
 
 function preload() {
     console.log("preload!!");

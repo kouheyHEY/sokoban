@@ -6,7 +6,7 @@ class FieldManager {
      */
     constructor(_fieldType) {
         // フィールド上のスプライトを管理するリスト
-        this.fieldUnitList2d = [];
+        this.fieldUnitList = [];
         // フィールドの背景に使用する画像の種類のリスト
         this.fieldGroundTypeList2d = [];
 
@@ -16,7 +16,7 @@ class FieldManager {
             this.fieldSizeCol = FIELD_SIZE_COL;
 
             // フィールドのサイズが広い場合
-        } else if (_fieldType == FIELD_SIZE_WIDE) {
+        } else if (_fieldType == FIELD_TYPE_WIDE) {
             this.fieldSizeRow = FIELD_SIZE_ROW * 2;
             this.fieldSizeCol = FIELD_SIZE_COL * 2;
         }
