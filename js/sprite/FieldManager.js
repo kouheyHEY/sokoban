@@ -5,6 +5,8 @@ class FieldManager {
      * @param {int} _fieldType フィールドの広さを決める変数
      */
     constructor(_fieldType) {
+        // プレイヤーを管理するオブジェクト
+        this.player = null;
         // フィールド上のスプライトを管理するリスト
         this.fieldUnitList = [];
         // フィールドの背景に使用する画像の種類のリスト
@@ -51,5 +53,9 @@ class FieldManager {
         }
 
         return fieldUnit;
+    }
+
+    getMovableTo() {
+
     }
 }
