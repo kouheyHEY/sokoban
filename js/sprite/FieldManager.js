@@ -11,6 +11,8 @@ class FieldManager {
         this.fieldUnitList = [];
         // フィールドの背景に使用する画像の種類のリスト
         this.fieldGroundTypeList2d = [];
+        // 移動方向
+        this.playerMoveDir = [];
 
         // フィールドサイズが通常の場合
         if (_fieldType == FIELD_TYPE_NORMAL) {
@@ -55,7 +57,34 @@ class FieldManager {
         return fieldUnit;
     }
 
-    getMovableTo() {
+    movePlayer() {
+        if (this.playerMoveDir[IDX_DIR_X] != 0) {
+            this.player.sprite.setVelocityX(PLAYER_SPEED * this.playerMoveDir[IDX_DIR_X]);
+        } else if (this.playerMoveDir[IDX_DIR_Y] != 0) {
+            this.player.sprite.setVelocityY(PLAYER_SPEED * this.playerMoveDir[IDX_DIR_Y]);
+        }
 
+        if (
+            Math.abs(this.player.sprite.x - (this.player.col * UNIT_SIZE + UNIT_SIZE / 2)) >= UNIT_SIZE ||
+            Math.abs(this.player.sprite.y - (this.player.row * UNIT_SIZE + UNIT_SIZE / 2)) >= UNIT_SIZE
+        ) {
+            this.player.col += this.playerMoveDir[IDX_DIR_X];
+            this.player.row += this.playerMoveDir[IDX_DIR_Y];
+            this.player.sprite.x = this.player.col * UNIT_SIZE + UNIT_SIZE / 2;
+            this.player.sprite.y = this.player.row * UNIT_SIZE + UNIT_SIZE / 2;
+
+            this.player.sprite.setVelocityX(0);
+            this.player.sprite.setVelocityY(0);
+            this.playerMoveDir = [];
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    adjustPlayerPos() {
+        this.player.sprite.x = this.player.col * UNIT_SIZE + UNIT_SIZE / 2;
+        this.player.sprite.y = this.player.row * UNIT_SIZE + UNIT_SIZE / 2;
     }
 }

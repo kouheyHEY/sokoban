@@ -31,6 +31,32 @@ const FIELD_SPRITE_IMG = [
     "goal_houseRamen"
 ];
 
+// プレイヤーのスプライト（正面、右、左、後ろの順番）
+const PLAYER_IMG = [
+    [
+        "slime_front_normal_1",
+        "slime_front_normal_2",
+        "slime_front_normal_3"
+    ],
+    [
+        "slime_right_normal_1",
+        "slime_right_normal_2",
+        "slime_right_normal_3"],
+    [
+        "slime_left_normal_1",
+        "slime_left_normal_2",
+        "slime_left_normal_3"],
+    [
+        "slime_back_normal_1",
+        "slime_back_normal_2",
+        "slime_back_normal_3"]
+];
+const PLAYER_IMG_FRONT = 0;
+const PLAYER_IMG_RIGHT = 1;
+const PLAYER_IMG_LEFT = 2;
+const PLAYER_IMG_BACK = 3;
+const PLAYER_IMG_ANM_NUM = 3;
+
 // 各ユニットのタイプ
 const TYPE_BLANK = "0";
 const TYPE_PLAYER = "1";
@@ -41,4 +67,12 @@ const TYPE_RAMEN = "5";
 
 // ユニットのサイズ
 const UNIT_SIZE = 96;
+
+// プレイヤーの移動速度
+const PLAYER_SPEED = 180;
+
+// オブジェクトの移動方向配列の添え字
+const IDX_DIR_X = 0;
+const IDX_DIR_Y = 1;
+
 /* 全シーン共通変数 END */

@@ -78,12 +78,23 @@ class GameScene extends Phaser.Scene {
     }
 
     update() {
+        // 移動中の場合
+        if (this.movingPlayerFlg) {
+            this.movingPlayerFlg = this.fieldManager.movePlayer();
+            if (!this.movingPlayerFlg) {
+                this.drawMovableAreaFlg = false;
+            }
+            // 止まっている場合
+        } else {
+            // プレイヤーの位置を常に調整する
+            this.fieldManager.adjustPlayerPos();
+
+        }
         // 移動可能方向を描画する
         if (!this.drawMovableAreaFlg) {
             this.drawMovableArea();
             this.drawMovableAreaFlg = true;
         }
-
 
     }
 
@@ -91,19 +102,19 @@ class GameScene extends Phaser.Scene {
         let movableDirList = [[0, -1], [-1, 0], [1, 0], [0, 1]];
         for (let dirList of movableDirList) {
             let toPoint = [
-                this.fieldManager.player.col + dirList[0],
-                this.fieldManager.player.row + dirList[1],
+                this.fieldManager.player.col + dirList[IDX_DIR_X],
+                this.fieldManager.player.row + dirList[IDX_DIR_Y],
             ];
 
             // 移動方向にスプライトがない場合
             if (
-                this.fieldManager.getSpriteOfPoint(toPoint[1], toPoint[0]) == null
+                this.fieldManager.getSpriteOfPoint(toPoint[IDX_DIR_Y], toPoint[IDX_DIR_X]) == null
             ) {
 
                 // グラフィクスで描画する矩形を設定する
                 let movableRect = new Phaser.Geom.Rectangle(
-                    UNIT_SIZE * toPoint[1],
-                    UNIT_SIZE * toPoint[0],
+                    UNIT_SIZE * toPoint[IDX_DIR_X],
+                    UNIT_SIZE * toPoint[IDX_DIR_Y],
                     UNIT_SIZE,
                     UNIT_SIZE
                 );
@@ -121,9 +132,13 @@ class GameScene extends Phaser.Scene {
 
                     // クリックされた場合
                     if (pointer.isDown && !this.movingPlayerFlg) {
-                        console.log(pointer);
+
                         // 移動中フラグを設定する
                         this.movingPlayerFlg = true;
+
+                        // 移動方向をスプライト管理オブジェクトに設定する
+                        let toDir = [Math.floor(pointer.x / UNIT_SIZE) - this.fieldManager.player.col, Math.floor(pointer.y / UNIT_SIZE) - this.fieldManager.player.row];
+                        this.fieldManager.playerMoveDir = toDir;
 
                         // グラフィクス管理用リストをクリアする
                         for (let g of this.graphicsList) {
