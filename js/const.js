@@ -24,7 +24,7 @@ const FIELD_BG_IMG = [
 ];
 const FIELD_SPRITE_IMG = [
     "",
-    "slime_front_normal_1",
+    "slime",
     "box_wood",
     "hole_grass_1",
     "block_Rock",
@@ -32,30 +32,16 @@ const FIELD_SPRITE_IMG = [
 ];
 
 // プレイヤーのスプライト（正面、右、左、後ろの順番）
-const PLAYER_IMG = [
-    [
-        "slime_front_normal_1",
-        "slime_front_normal_2",
-        "slime_front_normal_3"
-    ],
-    [
-        "slime_right_normal_1",
-        "slime_right_normal_2",
-        "slime_right_normal_3"],
-    [
-        "slime_left_normal_1",
-        "slime_left_normal_2",
-        "slime_left_normal_3"],
-    [
-        "slime_back_normal_1",
-        "slime_back_normal_2",
-        "slime_back_normal_3"]
-];
 const PLAYER_IMG_FRONT = 0;
 const PLAYER_IMG_RIGHT = 1;
 const PLAYER_IMG_LEFT = 2;
 const PLAYER_IMG_BACK = 3;
-const PLAYER_IMG_ANM_NUM = 3;
+const PLAYER_IMG_ANM_NUM = 4;
+
+const PLAYER_IMG_KEY_FRONT = "front";
+const PLAYER_IMG_KEY_RIGHT = "right";
+const PLAYER_IMG_KEY_LEFT = "left";
+const PLAYER_IMG_KEY_BACK = "back";
 
 // 各ユニットのタイプ
 const TYPE_BLANK = "0";
@@ -74,5 +60,8 @@ const PLAYER_SPEED = 180;
 // オブジェクトの移動方向配列の添え字
 const IDX_DIR_X = 0;
 const IDX_DIR_Y = 1;
+
+// 移動可能エリアの透明度
+const MOVABLE_AREA_ALPHA = 0.7;
 
 /* 全シーン共通変数 END */
