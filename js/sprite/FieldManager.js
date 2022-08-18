@@ -41,20 +41,18 @@ class FieldManager {
      * フィールド上の指定の位置にあるスプライトを返す
      * @param {int} _row 検索する位置の行 
      * @param {int} _col 検索する位置の列
-     * @returns 指定の位置のスプライト（なければnull）
+     * @returns 指定の位置のスプライトの種類（なければ-1）
      */
-    getSpriteOfPoint(_row, _col) {
-        let fieldUnit = null;
+    getSpriteTypeOfPoint(_row, _col) {
+        let fieldUnitType = TYPE_BLANK;
 
-        for (let unitListTmp of this.fieldGroundTypeList2d) {
-            for (let unitTmp of unitListTmp) {
-                if (unitTmp.row == _row && unitTmp.col == _col) {
-                    fieldUnit = unitTmp;
-                }
+        for (let unitTmp of this.fieldUnitList) {
+            if (unitTmp.row == _row && unitTmp.col == _col) {
+                fieldUnitType = unitTmp.type;
             }
         }
 
-        return fieldUnit;
+        return fieldUnitType;
     }
 
     movePlayer() {

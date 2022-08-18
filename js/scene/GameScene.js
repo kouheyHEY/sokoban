@@ -13,7 +13,6 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
-
         // マップファイルの読込
         this.load.json("map", DIR_MAPFILE_PUBLIC + "/map_test.json");
     }
@@ -68,7 +67,7 @@ class GameScene extends Phaser.Scene {
                                     end: (PLAYER_IMG_FRONT + 1) * PLAYER_IMG_ANM_NUM - 1
                                 }
                             ),
-                            frameRate: 10,
+                            frameRate: PLAYER_ANIM_FRAME,
                             repeat: -1
                         });
                         // 右
@@ -81,7 +80,7 @@ class GameScene extends Phaser.Scene {
                                     end: (PLAYER_IMG_RIGHT + 1) * PLAYER_IMG_ANM_NUM - 1
                                 }
                             ),
-                            frameRate: 10,
+                            frameRate: PLAYER_ANIM_FRAME,
                             repeat: -1
                         });
                         // 左
@@ -94,7 +93,7 @@ class GameScene extends Phaser.Scene {
                                     end: (PLAYER_IMG_LEFT + 1) * PLAYER_IMG_ANM_NUM - 1
                                 }
                             ),
-                            frameRate: 10,
+                            frameRate: PLAYER_ANIM_FRAME,
                             repeat: -1
                         });
                         // 後ろ
@@ -107,7 +106,7 @@ class GameScene extends Phaser.Scene {
                                     end: (PLAYER_IMG_BACK + 1) * PLAYER_IMG_ANM_NUM - 1
                                 }
                             ),
-                            frameRate: 10,
+                            frameRate: PLAYER_ANIM_FRAME,
                             repeat: -1
                         });
 
@@ -123,7 +122,7 @@ class GameScene extends Phaser.Scene {
                                     ),
                                 "row": row,
                                 "col": col,
-                                "type": mapJson.fieldData2d[row][col]
+                                "type": String(mapJson.fieldData2d[row][col])
                             }
                         );
                     }
@@ -167,17 +166,29 @@ class GameScene extends Phaser.Scene {
                 this.fieldManager.player.row + dirList[IDX_DIR_Y],
             ];
 
+            let spriteTypeOfNextPoint = this.fieldManager.getSpriteTypeOfPoint(toPoint[IDX_DIR_Y], toPoint[IDX_DIR_X]);
+
             // 移動方向にスプライトがない場合
             if (
-                this.fieldManager.getSpriteOfPoint(toPoint[IDX_DIR_Y], toPoint[IDX_DIR_X]) == null
+                spriteTypeOfNextPoint == TYPE_BLANK ||
+                TYPE_MOVABLE_LIST.includes(spriteTypeOfNextPoint)
             ) {
-
-                // 描画する移動可能エリアを設定する
-                let movableArea = this.add.image(
-                    toPoint[IDX_DIR_X] * UNIT_SIZE + UNIT_SIZE / 2,
-                    toPoint[IDX_DIR_Y] * UNIT_SIZE + UNIT_SIZE / 2,
-                    "square_movable_area"
-                ).setAlpha(MOVABLE_AREA_ALPHA).setInteractive();
+                let movableArea = null;
+                if (TYPE_MOVABLE_LIST.includes(spriteTypeOfNextPoint)) {
+                    // 描画する移動可能エリアを設定する
+                    movableArea = this.add.image(
+                        toPoint[IDX_DIR_X] * UNIT_SIZE + UNIT_SIZE / 2,
+                        toPoint[IDX_DIR_Y] * UNIT_SIZE + UNIT_SIZE / 2,
+                        "square_movable_area_actionable"
+                    ).setAlpha(MOVABLE_AREA_ALPHA).setInteractive();
+                } else {
+                    // 描画する移動可能エリアを設定する
+                    movableArea = this.add.image(
+                        toPoint[IDX_DIR_X] * UNIT_SIZE + UNIT_SIZE / 2,
+                        toPoint[IDX_DIR_Y] * UNIT_SIZE + UNIT_SIZE / 2,
+                        "square_movable_area"
+                    ).setAlpha(MOVABLE_AREA_ALPHA).setInteractive();
+                }
 
                 // 移動可能エリア管理用リストに追加する
                 this.movableAreaList.push(movableArea);

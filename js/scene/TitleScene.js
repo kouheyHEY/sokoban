@@ -44,6 +44,7 @@ class TitleScene extends Phaser.Scene {
         this.load.image("title_game", "./assets/img/title_game.png")
         this.load.image("title_select_cursor", "./assets/img/title_select_cursor.png")
         this.load.image("square_movable_area", "./assets/img/movableArea.png")
+        this.load.image("square_movable_area_actionable", "./assets/img/movableAreaActionable.png")
 
         // 各スプライトシートの読み込み
         this.load.spritesheet("slime", "assets/img/slime_spriteSheet.png", {

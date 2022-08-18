@@ -51,11 +51,20 @@ const TYPE_HOLE = "3";
 const TYPE_ROCK = "4";
 const TYPE_RAMEN = "5";
 
+// 移動可能オブジェクト
+const TYPE_MOVABLE_LIST = [
+    TYPE_PLAYER,
+    TYPE_BOX
+];
+
 // ユニットのサイズ
 const UNIT_SIZE = 96;
 
 // プレイヤーの移動速度
 const PLAYER_SPEED = 180;
+
+// プレイヤーのアニメーションループフレーム速度
+const PLAYER_ANIM_FRAME = 8;
 
 // オブジェクトの移動方向配列の添え字
 const IDX_DIR_X = 0;
