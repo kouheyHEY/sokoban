@@ -13,6 +13,10 @@ class FieldManager {
         this.fieldGroundTypeList2d = [];
         // 移動方向
         this.playerMoveDir = [];
+        this.playerMoveDist = 0;
+        this.spriteMoveDir = [];
+        this.spriteMoveDist = 0;
+        this.movingSprite = null;
 
         // フィールドサイズが通常の場合
         if (_fieldType == FIELD_TYPE_NORMAL) {
@@ -41,39 +45,63 @@ class FieldManager {
      * フィールド上の指定の位置にあるスプライトを返す
      * @param {int} _row 検索する位置の行 
      * @param {int} _col 検索する位置の列
-     * @returns 指定の位置のスプライトの種類（なければ-1）
+     * @returns 指定の位置のスプライトの種類（なければ0）
      */
     getSpriteTypeOfPoint(_row, _col) {
-        let fieldUnitType = TYPE_BLANK;
-
-        for (let unitTmp of this.fieldUnitList) {
-            if (unitTmp.row == _row && unitTmp.col == _col) {
-                fieldUnitType = unitTmp.type;
-            }
+        let fieldUnit = this.getSpriteByPos(_row, _col);
+        if (fieldUnit == null) {
+            return TYPE_BLANK;
+        } else {
+            return fieldUnit.type;
         }
-
-        return fieldUnitType;
     }
 
-    movePlayer() {
-        if (this.playerMoveDir[IDX_DIR_X] != 0) {
-            this.player.sprite.setVelocityX(PLAYER_SPEED * this.playerMoveDir[IDX_DIR_X]);
-        } else if (this.playerMoveDir[IDX_DIR_Y] != 0) {
-            this.player.sprite.setVelocityY(PLAYER_SPEED * this.playerMoveDir[IDX_DIR_Y]);
+    /**
+     * スプライトを移動方向に移動させる
+     * @param _isPlayer プレイヤーの場合はtrue
+     * @returns 動いている場合はtrue
+     */
+    moveSprite(_isPlayer) {
+        let moveDirTmp = [];
+        let moveSpriteTmp = null;
+        let moveDistTmp = 0;
+        if (_isPlayer) {
+            moveDirTmp = this.playerMoveDir;
+            moveSpriteTmp = this.player;
+            moveDistTmp = this.playerMoveDist
+        } else {
+            moveDirTmp = this.spriteMoveDir;
+            moveSpriteTmp = this.movingSprite;
+            moveDistTmp = this.spriteMoveDist;
+        }
+        // スプライトの移動方向に速度を設定する
+        // スプライトがx方向に動く場合
+        if (moveDirTmp[IDX_DIR_X] != 0) {
+            // x方向に速度を設定する
+            moveSpriteTmp.sprite.setVelocityX(SPRITE_SPEED * moveDirTmp[IDX_DIR_X]);
+            moveDistTmp = Math.abs(moveSpriteTmp.sprite.x - (moveSpriteTmp.col * UNIT_SIZE + UNIT_SIZE / 2));
+
+            // スプライトがy方向に動く場合
+        } else if (moveDirTmp[IDX_DIR_Y] != 0) {
+            // y方向に速度を設定する
+            moveSpriteTmp.sprite.setVelocityY(SPRITE_SPEED * moveDirTmp[IDX_DIR_Y]);
+            moveDistTmp = Math.abs(moveSpriteTmp.sprite.y - (moveSpriteTmp.row * UNIT_SIZE + UNIT_SIZE / 2));
         }
 
-        if (
-            Math.abs(this.player.sprite.x - (this.player.col * UNIT_SIZE + UNIT_SIZE / 2)) >= UNIT_SIZE ||
-            Math.abs(this.player.sprite.y - (this.player.row * UNIT_SIZE + UNIT_SIZE / 2)) >= UNIT_SIZE
-        ) {
-            this.player.col += this.playerMoveDir[IDX_DIR_X];
-            this.player.row += this.playerMoveDir[IDX_DIR_Y];
-            this.player.sprite.x = this.player.col * UNIT_SIZE + UNIT_SIZE / 2;
-            this.player.sprite.y = this.player.row * UNIT_SIZE + UNIT_SIZE / 2;
+        // 移動した距離が一定以上の場合
+        if (moveDistTmp >= UNIT_SIZE) {
 
-            this.player.sprite.setVelocityX(0);
-            this.player.sprite.setVelocityY(0);
-            this.playerMoveDir = [];
+            // スプライトの位置を調整し、座標を変更する
+            moveSpriteTmp.col += moveDirTmp[IDX_DIR_X];
+            moveSpriteTmp.row += moveDirTmp[IDX_DIR_Y];
+            moveSpriteTmp.sprite.x = moveSpriteTmp.col * UNIT_SIZE + UNIT_SIZE / 2;
+            moveSpriteTmp.sprite.y = moveSpriteTmp.row * UNIT_SIZE + UNIT_SIZE / 2;
+
+            // 移動を調整する
+            moveSpriteTmp.sprite.setVelocityX(0);
+            moveSpriteTmp.sprite.setVelocityY(0);
+            moveDirTmp = [];
+            moveDistTmp = 0;
 
             return false;
         } else {
@@ -81,8 +109,40 @@ class FieldManager {
         }
     }
 
-    adjustPlayerPos() {
-        this.player.sprite.x = this.player.col * UNIT_SIZE + UNIT_SIZE / 2;
-        this.player.sprite.y = this.player.row * UNIT_SIZE + UNIT_SIZE / 2;
+    adjustSpritePos(_isPlayer) {
+        if (_isPlayer) {
+            this.player.sprite.x = this.player.col * UNIT_SIZE + UNIT_SIZE / 2;
+            this.player.sprite.y = this.player.row * UNIT_SIZE + UNIT_SIZE / 2;
+        } else if (this.movingSprite != null) {
+            this.movingSprite.sprite.x = this.movingSprite.col * UNIT_SIZE + UNIT_SIZE / 2;
+            this.movingSprite.sprite.y = this.movingSprite.row * UNIT_SIZE + UNIT_SIZE / 2;
+        }
+    }
+
+    /**
+     * 指定の位置にあるスプライトを移動中のスプライトに設定する
+     * @param {int} _row 指定する行
+     * @param {int} _col 指定する列
+     */
+    setMovingSprite(_row, _col) {
+        this.movingSprite = this.getSpriteByPos(_row, _col);
+        if (this.movingSprite == null) {
+            this.movingSprite = this.player;
+        }
+    }
+
+    /**
+     * 
+     * @param {int} _row 指定した行
+     * @param {int} _col 指定した列
+     * @returns 指定した座標のスプライト（なければnull）
+     */
+    getSpriteByPos(_row, _col) {
+        for (let unitTmp of this.fieldUnitList) {
+            if (unitTmp.row == _row && unitTmp.col == _col) {
+                return unitTmp;
+            }
+        }
+        return null;
     }
 }

@@ -60,8 +60,8 @@ const TYPE_MOVABLE_LIST = [
 // ユニットのサイズ
 const UNIT_SIZE = 96;
 
-// プレイヤーの移動速度
-const PLAYER_SPEED = 180;
+// スプライトの移動速度
+const SPRITE_SPEED = 180;
 
 // プレイヤーのアニメーションループフレーム速度
 const PLAYER_ANIM_FRAME = 8;

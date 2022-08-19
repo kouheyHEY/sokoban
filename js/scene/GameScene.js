@@ -10,6 +10,7 @@ class GameScene extends Phaser.Scene {
         // 各フラグ
         this.drawMovableAreaFlg = false;
         this.movingPlayerFlg = false;
+        this.movingSpriteFlg = false;
     }
 
     preload() {
@@ -135,19 +136,25 @@ class GameScene extends Phaser.Scene {
     }
 
     update() {
-        // 移動中の場合
-        if (this.movingPlayerFlg) {
-            this.movingPlayerFlg = this.fieldManager.movePlayer();
-            if (!this.movingPlayerFlg) {
+        // スプライトが移動中の場合
+        if (this.movingPlayerFlg || this.movingSpriteFlg) {
+            // プレイヤーの場合
+            if (this.movingPlayerFlg) {
+                this.movingPlayerFlg = this.fieldManager.moveSprite(true);
+                // プレイヤー以外の場合
+            } else if (this.movingSpriteFlg) {
+                this.movingSpriteFlg = this.fieldManager.moveSprite(false);
+            }
+            // 全てが止まっている場合
+            if (!this.movingPlayerFlg && !this.movingSpriteFlg) {
+                // 移動可能エリアを描画する
                 this.drawMovableAreaFlg = false;
             }
             // 止まっている場合
         } else {
-            // プレイヤーの位置を常に調整する
-            this.fieldManager.adjustPlayerPos();
-
-            // アニメーションを止める
-            // this.fieldManager.player.sprite.anims.stop();
+            // スプライトの位置を常に調整する
+            this.fieldManager.adjustSpritePos(true);
+            this.fieldManager.adjustSpritePos(false);
 
         }
         // 移動可能方向を描画する
@@ -166,9 +173,14 @@ class GameScene extends Phaser.Scene {
                 this.fieldManager.player.row + dirList[IDX_DIR_Y],
             ];
 
-            let spriteTypeOfNextPoint = this.fieldManager.getSpriteTypeOfPoint(toPoint[IDX_DIR_Y], toPoint[IDX_DIR_X]);
+            let spriteTypeOfNextPoint =
+                this.fieldManager.getSpriteTypeOfPoint(
+                    toPoint[IDX_DIR_Y],
+                    toPoint[IDX_DIR_X]
+                );
 
-            // 移動方向にスプライトがない場合
+            // 移動方向にスプライトがない場合、または
+            // 移動方向に移動可能なスプライトがある場合
             if (
                 spriteTypeOfNextPoint == TYPE_BLANK ||
                 TYPE_MOVABLE_LIST.includes(spriteTypeOfNextPoint)
@@ -196,12 +208,26 @@ class GameScene extends Phaser.Scene {
                 // 追加した移動可能エリアにクリックイベントを追加する
                 movableArea.on('pointerdown', function (pointer) {
 
-                    // 移動中フラグを設定する
-                    this.movingPlayerFlg = true;
-
-                    // 移動方向をスプライト管理オブジェクトに設定する
-                    let toDir = [Math.floor(pointer.x / UNIT_SIZE) - this.fieldManager.player.col, Math.floor(pointer.y / UNIT_SIZE) - this.fieldManager.player.row];
-                    this.fieldManager.playerMoveDir = toDir;
+                    let toDir = [
+                        Math.floor(pointer.x / UNIT_SIZE) - this.fieldManager.player.col,
+                        Math.floor(pointer.y / UNIT_SIZE) - this.fieldManager.player.row
+                    ];
+                    if (spriteTypeOfNextPoint == TYPE_BLANK) {
+                        // 移動中フラグを設定する
+                        this.movingPlayerFlg = true;
+                        // 移動方向を設定する
+                        this.fieldManager.playerMoveDir = toDir;
+                    } else if (spriteTypeOfNextPoint == TYPE_BOX) {
+                        // 移動中フラグを設定する
+                        this.movingSpriteFlg = true;
+                        // 移動方向を設定する
+                        this.fieldManager.spriteMoveDir = toDir;
+                        // 移動させるスプライトを設定する
+                        this.fieldManager.setMovingSprite(
+                            Math.floor(pointer.y / UNIT_SIZE),
+                            Math.floor(pointer.x / UNIT_SIZE)
+                        );
+                    }
 
                     // 右方向への移動の場合
                     if (toDir[IDX_DIR_X] > 0) {
