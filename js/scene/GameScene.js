@@ -52,7 +52,7 @@ class GameScene extends Phaser.Scene {
                                     UNIT_SIZE / 2 + UNIT_SIZE * col,
                                     UNIT_SIZE / 2 + UNIT_SIZE * row,
                                     FIELD_SPRITE_IMG[TYPE_PLAYER]
-                                ),
+                                ).setDepth(TYPE_MOVABLE_AREA),
                             "row": row,
                             "col": col
                         }
@@ -120,7 +120,7 @@ class GameScene extends Phaser.Scene {
                                         UNIT_SIZE / 2 + UNIT_SIZE * col,
                                         UNIT_SIZE / 2 + UNIT_SIZE * row,
                                         FIELD_SPRITE_IMG[mapJson.fieldData2d[row][col]]
-                                    ),
+                                    ).setDepth(mapJson.fieldData2d[row][col]),
                                 "row": row,
                                 "col": col,
                                 "type": String(mapJson.fieldData2d[row][col])
@@ -165,41 +165,55 @@ class GameScene extends Phaser.Scene {
 
     }
 
+    /**
+     * プレイヤーが移動可能なエリアに色を付ける
+     */
     drawMovableArea() {
+        // 移動方向に対するベクトルの配列を定義する
         let movableDirList = [[0, -1], [-1, 0], [1, 0], [0, 1]];
+        // 各移動方向に対して以下の処理を繰り返す
         for (let dirList of movableDirList) {
+            // 移動先の座標を定義する
             let toPoint = [
                 this.fieldManager.player.col + dirList[IDX_DIR_X],
                 this.fieldManager.player.row + dirList[IDX_DIR_Y],
             ];
-
+            // 移動先の座標にあるスプライトのタイプを取得する
             let spriteTypeOfNextPoint =
                 this.fieldManager.getSpriteTypeOfPoint(
                     toPoint[IDX_DIR_Y],
                     toPoint[IDX_DIR_X]
                 );
 
-            // 移動方向にスプライトがない場合、または
+            // 移動方向に通過可能なスプライトがある場合、または
             // 移動方向に移動可能なスプライトがある場合
             if (
-                spriteTypeOfNextPoint == TYPE_BLANK ||
+                TYPE_PASSABLE_LIST.includes(spriteTypeOfNextPoint) ||
                 TYPE_MOVABLE_LIST.includes(spriteTypeOfNextPoint)
             ) {
                 let movableArea = null;
+                // 移動方向にあるスプライトが移動可能なスプライトの場合
                 if (TYPE_MOVABLE_LIST.includes(spriteTypeOfNextPoint)) {
                     // 描画する移動可能エリアを設定する
                     movableArea = this.add.image(
                         toPoint[IDX_DIR_X] * UNIT_SIZE + UNIT_SIZE / 2,
                         toPoint[IDX_DIR_Y] * UNIT_SIZE + UNIT_SIZE / 2,
                         "square_movable_area_actionable"
-                    ).setAlpha(MOVABLE_AREA_ALPHA).setInteractive();
+                    ).setAlpha(MOVABLE_AREA_ALPHA)
+                        .setInteractive()
+                        .setDepth(TYPE_MOVABLE_AREA);
+
+                    // 移動方向にあるスプライトが通過可能なスプライトの場合
                 } else {
                     // 描画する移動可能エリアを設定する
                     movableArea = this.add.image(
                         toPoint[IDX_DIR_X] * UNIT_SIZE + UNIT_SIZE / 2,
                         toPoint[IDX_DIR_Y] * UNIT_SIZE + UNIT_SIZE / 2,
                         "square_movable_area"
-                    ).setAlpha(MOVABLE_AREA_ALPHA).setInteractive();
+                    ).setAlpha(MOVABLE_AREA_ALPHA)
+                        .setInteractive()
+                        .setDepth(TYPE_MOVABLE_AREA);
+
                 }
 
                 // 移動可能エリア管理用リストに追加する
@@ -212,12 +226,13 @@ class GameScene extends Phaser.Scene {
                         Math.floor(pointer.x / UNIT_SIZE) - this.fieldManager.player.col,
                         Math.floor(pointer.y / UNIT_SIZE) - this.fieldManager.player.row
                     ];
-                    if (spriteTypeOfNextPoint == TYPE_BLANK) {
+                    if (TYPE_PASSABLE_LIST.includes(spriteTypeOfNextPoint)) {
                         // 移動中フラグを設定する
                         this.movingPlayerFlg = true;
                         // 移動方向を設定する
                         this.fieldManager.playerMoveDir = toDir;
-                    } else if (spriteTypeOfNextPoint == TYPE_BOX) {
+
+                    } else if (TYPE_MOVABLE_LIST.includes(spriteTypeOfNextPoint)) {
                         // 移動中フラグを設定する
                         this.movingSpriteFlg = true;
                         // 移動方向を設定する
@@ -227,6 +242,7 @@ class GameScene extends Phaser.Scene {
                             Math.floor(pointer.y / UNIT_SIZE),
                             Math.floor(pointer.x / UNIT_SIZE)
                         );
+
                     }
 
                     // 右方向への移動の場合

@@ -68,7 +68,7 @@ class FieldManager {
         if (_isPlayer) {
             moveDirTmp = this.playerMoveDir;
             moveSpriteTmp = this.player;
-            moveDistTmp = this.playerMoveDist
+            moveDistTmp = this.playerMoveDist;
         } else {
             moveDirTmp = this.spriteMoveDir;
             moveSpriteTmp = this.movingSprite;
@@ -79,17 +79,52 @@ class FieldManager {
         if (moveDirTmp[IDX_DIR_X] != 0) {
             // x方向に速度を設定する
             moveSpriteTmp.sprite.setVelocityX(SPRITE_SPEED * moveDirTmp[IDX_DIR_X]);
-            moveDistTmp = Math.abs(moveSpriteTmp.sprite.x - (moveSpriteTmp.col * UNIT_SIZE + UNIT_SIZE / 2));
+            moveDistTmp = Math.abs(
+                moveSpriteTmp.sprite.x - (moveSpriteTmp.col * UNIT_SIZE + UNIT_SIZE / 2)
+            );
 
             // スプライトがy方向に動く場合
         } else if (moveDirTmp[IDX_DIR_Y] != 0) {
             // y方向に速度を設定する
             moveSpriteTmp.sprite.setVelocityY(SPRITE_SPEED * moveDirTmp[IDX_DIR_Y]);
-            moveDistTmp = Math.abs(moveSpriteTmp.sprite.y - (moveSpriteTmp.row * UNIT_SIZE + UNIT_SIZE / 2));
+            moveDistTmp = Math.abs(
+                moveSpriteTmp.sprite.y - (moveSpriteTmp.row * UNIT_SIZE + UNIT_SIZE / 2)
+            );
         }
 
         // 移動した距離が一定以上の場合
         if (moveDistTmp >= UNIT_SIZE) {
+
+            // スプライトの移動を停止する
+            moveSpriteTmp.sprite.setVelocityX(0);
+            moveSpriteTmp.sprite.setVelocityY(0);
+
+            // 移動中のスプライトがBOXの場合かつ
+            // 移動先に穴がある場合
+            if (!_isPlayer && moveSpriteTmp.type == TYPE_BOX
+                && this.getSpriteTypeOfPoint(
+                    moveSpriteTmp.row + moveDirTmp[IDX_DIR_Y],
+                    moveSpriteTmp.col + moveDirTmp[IDX_DIR_X]
+                ) == TYPE_HOLE
+            ) {
+                // 移動先の穴に箱を落とす
+                let hole = this.getSpriteByPos(
+                    moveSpriteTmp.row + moveDirTmp[IDX_DIR_Y],
+                    moveSpriteTmp.col + moveDirTmp[IDX_DIR_X]
+                );
+                hole.type = TYPE_HOLE_FILL;
+                hole.sprite.setTexture(FIELD_SPRITE_IMG[TYPE_HOLE_FILL]);
+
+                // 移動した箱のスプライトを削除する
+                this.fieldUnitList[this.getIndexOfSprite(moveSpriteTmp.row, moveSpriteTmp.col)].sprite.destroy();
+                delete this.fieldUnitList[this.getIndexOfSprite(moveSpriteTmp.row, moveSpriteTmp.col)];
+                this.fieldUnitList = this.fieldUnitList.filter(Boolean);
+
+                this.movingSprite = null;
+                this.spriteMoveDist = 0;
+
+                return false;
+            }
 
             // スプライトの位置を調整し、座標を変更する
             moveSpriteTmp.col += moveDirTmp[IDX_DIR_X];
@@ -97,9 +132,6 @@ class FieldManager {
             moveSpriteTmp.sprite.x = moveSpriteTmp.col * UNIT_SIZE + UNIT_SIZE / 2;
             moveSpriteTmp.sprite.y = moveSpriteTmp.row * UNIT_SIZE + UNIT_SIZE / 2;
 
-            // 移動を調整する
-            moveSpriteTmp.sprite.setVelocityX(0);
-            moveSpriteTmp.sprite.setVelocityY(0);
             moveDirTmp = [];
             moveDistTmp = 0;
 
@@ -109,6 +141,10 @@ class FieldManager {
         }
     }
 
+    /**
+     * 移動後のスプライトの位置を調整する
+     * @param {boolean} _isPlayer プレイヤーかどうか
+     */
     adjustSpritePos(_isPlayer) {
         if (_isPlayer) {
             this.player.sprite.x = this.player.col * UNIT_SIZE + UNIT_SIZE / 2;
@@ -132,7 +168,7 @@ class FieldManager {
     }
 
     /**
-     * 
+     * 指定の位置にスプライトがあるかどうか判定する
      * @param {int} _row 指定した行
      * @param {int} _col 指定した列
      * @returns 指定した座標のスプライト（なければnull）
@@ -144,5 +180,16 @@ class FieldManager {
             }
         }
         return null;
+    }
+
+    getIndexOfSprite(_row, _col) {
+        for (let unitIdx in this.fieldUnitList) {
+            if (
+                this.fieldUnitList[unitIdx].row == _row &&
+                this.fieldUnitList[unitIdx].col == _col
+            ) {
+                return unitIdx;
+            }
+        }
     }
 }

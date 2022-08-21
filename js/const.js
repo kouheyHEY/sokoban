@@ -25,10 +25,11 @@ const FIELD_BG_IMG = [
 const FIELD_SPRITE_IMG = [
     "",
     "slime",
-    "box_wood",
     "hole_grass_1",
+    "box_wood",
     "block_Rock",
-    "goal_houseRamen"
+    "goal_houseRamen",
+    "hole_grass_3"
 ];
 
 // プレイヤーのスプライト（正面、右、左、後ろの順番）
@@ -46,15 +47,24 @@ const PLAYER_IMG_KEY_BACK = "back";
 // 各ユニットのタイプ
 const TYPE_BLANK = "0";
 const TYPE_PLAYER = "1";
-const TYPE_BOX = "2";
-const TYPE_HOLE = "3";
+const TYPE_HOLE = "2";
+const TYPE_BOX = "3";
 const TYPE_ROCK = "4";
 const TYPE_RAMEN = "5";
+const TYPE_HOLE_FILL = "6";
+
+const TYPE_MOVABLE_AREA = 100;
 
 // 移動可能オブジェクト
 const TYPE_MOVABLE_LIST = [
     TYPE_PLAYER,
     TYPE_BOX
+];
+
+// 通過可能オブジェクト
+const TYPE_PASSABLE_LIST = [
+    TYPE_BLANK,
+    TYPE_HOLE_FILL
 ];
 
 // ユニットのサイズ
