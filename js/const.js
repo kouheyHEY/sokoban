@@ -61,6 +61,11 @@ const TYPE_MOVABLE_LIST = [
     TYPE_BOX
 ];
 
+// 取得可能オブジェクト
+const TYPE_ITEM_LIST = [
+    TYPE_RAMEN
+];
+
 // 通過可能オブジェクト
 const TYPE_PASSABLE_LIST = [
     TYPE_BLANK,

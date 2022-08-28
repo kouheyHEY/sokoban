@@ -11,6 +11,7 @@ class GameScene extends Phaser.Scene {
         this.drawMovableAreaFlg = false;
         this.movingPlayerFlg = false;
         this.movingSpriteFlg = false;
+        this.isGoalFlg = false;
     }
 
     preload() {
@@ -163,6 +164,22 @@ class GameScene extends Phaser.Scene {
             this.drawMovableAreaFlg = true;
         }
 
+        // ゴールした場合
+        if (this.isGoalFlg) {
+            // TODO: 処理を記載
+
+            // 全てのオブジェクトを破棄
+            this.fieldManager.destroyAll();
+            // フラグ変数などの初期化
+            this.isGoalFlg = false;
+            this.drawMovableAreaFlg = false;
+            this.movingPlayerFlg = false;
+            this.movingSpriteFlg = false;
+
+            // タッチされた場合、ゲームシーンに遷移する
+            this.scene.start('TitleScene');
+        }
+
     }
 
     /**
@@ -186,10 +203,12 @@ class GameScene extends Phaser.Scene {
                 );
 
             // 移動方向に通過可能なスプライトがある場合、または
-            // 移動方向に移動可能なスプライトがある場合
+            // 移動方向に移動可能なスプライトがある場合、または
+            // 移動方向に取得可能なスプライトがある場合
             if (
                 TYPE_PASSABLE_LIST.includes(spriteTypeOfNextPoint) ||
-                TYPE_MOVABLE_LIST.includes(spriteTypeOfNextPoint)
+                TYPE_MOVABLE_LIST.includes(spriteTypeOfNextPoint) ||
+                TYPE_ITEM_LIST.includes(spriteTypeOfNextPoint)
             ) {
                 let movableArea = null;
                 // 移動方向にあるスプライトが移動可能なスプライトの場合
@@ -204,7 +223,7 @@ class GameScene extends Phaser.Scene {
                         .setDepth(TYPE_MOVABLE_AREA);
 
                     // 移動方向にあるスプライトが通過可能なスプライトの場合
-                } else {
+                } else if (TYPE_PASSABLE_LIST.includes(spriteTypeOfNextPoint)) {
                     // 描画する移動可能エリアを設定する
                     movableArea = this.add.image(
                         toPoint[IDX_DIR_X] * UNIT_SIZE + UNIT_SIZE / 2,
@@ -214,6 +233,16 @@ class GameScene extends Phaser.Scene {
                         .setInteractive()
                         .setDepth(TYPE_MOVABLE_AREA);
 
+                    // 移動方向にあるスプライトが取得可能なスプライトの場合
+                } else if (TYPE_ITEM_LIST.includes(spriteTypeOfNextPoint)) {
+                    // 描画する移動可能エリアを設定する
+                    movableArea = this.add.image(
+                        toPoint[IDX_DIR_X] * UNIT_SIZE + UNIT_SIZE / 2,
+                        toPoint[IDX_DIR_Y] * UNIT_SIZE + UNIT_SIZE / 2,
+                        "square_movable_area"
+                    ).setAlpha(MOVABLE_AREA_ALPHA)
+                        .setInteractive()
+                        .setDepth(TYPE_MOVABLE_AREA);
                 }
 
                 // 移動可能エリア管理用リストに追加する
@@ -242,6 +271,11 @@ class GameScene extends Phaser.Scene {
                             Math.floor(pointer.y / UNIT_SIZE),
                             Math.floor(pointer.x / UNIT_SIZE)
                         );
+
+                    } else if (TYPE_ITEM_LIST.includes(spriteTypeOfNextPoint)) {
+                        // ゴールフラグを設定する
+                        this.isGoalFlg = true;
+                        return;
 
                     }
 

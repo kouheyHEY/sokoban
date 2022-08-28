@@ -41,6 +41,13 @@ class FieldManager {
         }
     }
 
+    destroyAll() {
+        for (let i = this.fieldUnitList.length - 1; i <= 0; i--) {
+            this.fieldUnitList[i].sprite.destroy();
+        }
+        this.player.sprite.destroy();
+    }
+
     /**
      * フィールド上の指定の位置にあるスプライトを返す
      * @param {int} _row 検索する位置の行 
@@ -182,14 +189,22 @@ class FieldManager {
         return null;
     }
 
+    /**
+     * 指定した位置にあるスプライト、スプライト管理リスト上でのインデックスを返す
+     * @param {int} _row 指定した行
+     * @param {int} _col 指定した列
+     * @returns スプライト管理リストでのスプライトのインデックス（鳴ければ0）
+     */
     getIndexOfSprite(_row, _col) {
+        let spriteIdx = 0;
         for (let unitIdx in this.fieldUnitList) {
             if (
                 this.fieldUnitList[unitIdx].row == _row &&
                 this.fieldUnitList[unitIdx].col == _col
             ) {
-                return unitIdx;
+                spriteIdx = unitIdx;
             }
         }
+        return spriteIdx;
     }
 }
