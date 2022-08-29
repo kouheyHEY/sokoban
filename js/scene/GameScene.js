@@ -14,9 +14,34 @@ class GameScene extends Phaser.Scene {
         this.isGoalFlg = false;
     }
 
-    preload() {
+    /**
+     * 各パラメータの初期化
+     */
+    initParameters() {
+        // フィールドを管理するオブジェクト
+        this.fieldManager = new FieldManager(FIELD_TYPE_NORMAL);
+        // グラフィクス管理用リスト
+        this.movableAreaList = [];
+        // 各フラグ
+        this.drawMovableAreaFlg = false;
+        this.movingPlayerFlg = false;
+        this.movingSpriteFlg = false;
+        this.isGoalFlg = false;
+
+
+    }
+
+    /**
+     * マップを定義したJSONファイルをランダムに読み込む。
+     */
+    loadMap() {
+        let mapId = Math.floor(Math.random() * 3);
         // マップファイルの読込
-        this.load.json("map", DIR_MAPFILE_PUBLIC + "/map_test.json");
+        this.load.json("map", DIR_MAPFILE_PUBLIC + "/map_test_" + mapId + ".json");
+    }
+
+    preload() {
+        this.loadMap();
     }
 
     // 画面生成時の実行関数
