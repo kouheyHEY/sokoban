@@ -28,7 +28,7 @@ const config = {
         default: "arcade",
         arcade: {
             // スプライトに緑の枠を表示
-            debug: true,
+            // debug: true,
             // 重力の方向と強さ
             gravity: {
             }

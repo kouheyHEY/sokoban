@@ -12,6 +12,8 @@ class GameScene extends Phaser.Scene {
         this.movingPlayerFlg = false;
         this.movingSpriteFlg = false;
         this.isGoalFlg = false;
+        // マップID
+        this.mapId;
     }
 
     /**
@@ -35,9 +37,10 @@ class GameScene extends Phaser.Scene {
      * マップを定義したJSONファイルをランダムに読み込む。
      */
     loadMap() {
-        let mapId = Math.floor(Math.random() * 3);
+        this.mapId = Math.floor(Math.random() * 3);
+        console.log(this.mapId);
         // マップファイルの読込
-        this.load.json("map", DIR_MAPFILE_PUBLIC + "/map_test_" + mapId + ".json");
+        this.load.json("map", DIR_MAPFILE_PUBLIC + "/map_test_" + this.mapId + ".json");
     }
 
     preload() {
@@ -195,6 +198,10 @@ class GameScene extends Phaser.Scene {
 
             // 全てのオブジェクトを破棄
             this.fieldManager.destroyAll();
+
+            // 既存のマップファイルの初期化
+            this.cache.json.remove("map");
+
             // フラグ変数などの初期化
             this.isGoalFlg = false;
             this.drawMovableAreaFlg = false;
